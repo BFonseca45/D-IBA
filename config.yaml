@@ -1,0 +1,10 @@
+param:
+  beta: 10000
+  gamma: 10000
+  sigma: 10000
+
+db:
+  dataset: 'VOC'
+  model: 'YOLO'
+
+run_metrics: True
