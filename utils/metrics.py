@@ -58,7 +58,7 @@ class EvalMetric():
         labels = out['labels']
 
         scores = torch.nn.functional.softmax(logits, dim=1)
-        scores = scores[:, self.target_index]
+        scores = scores[:, self.target_index-1]
         
         similarity = torch.tensor(0)
 

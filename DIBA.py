@@ -94,14 +94,14 @@ def train_bottleneck(model, metric_model, img, gamma, sigma, beta, scale_shape, 
         truth_box.retain_graph = True
 
         target_class_index = labels_c[j]
-        # truth_class = nn.functional.one_hot(target_class_index-1, 90).view((1,-1)).double().to(device) # YOLO was trained with only 80 classes
-        truth_class = nn.functional.one_hot(target_class_index, 80).view((1,-1)).double().to(device)
+        truth_class = nn.functional.one_hot(target_class_index-1, 90).view((1,-1)).double().to(device) # YOLO was trained with only 80 classes
+        # truth_class = nn.functional.one_hot(target_class_index, 80).view((1,-1)).double().to(device)
 
-        # # performing the bottleneck, this part here might not be needed for yolo 
-        # for p in model.parameters():
-        #     p.requires_grad = False
+        # performing the bottleneck, this part here might not be needed for yolo 
+        for p in model.parameters():
+            p.requires_grad = False
         opt_params = list(model.parameters())
-        # opt_params[0].requires_grad = True
+        opt_params[0].requires_grad = True
 
         optm = torch.optim.Adam(opt_params, lr = 0.5)
         optm.zero_grad()

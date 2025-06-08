@@ -49,7 +49,7 @@ def run_main(cfg:DictConfig) -> None:
                                                 annFile= 'C:/Users/bfons/OneDrive/Documents/Datasets/Coco2017/annotations/instances_val2017.json',
                                                 transform=transforms.ToTensor())
     elif dataset_name == 'VOC':    
-        dset = torchvision.datasets.VOCDetection(root='~/Downloads/', image_set='val', download=True, transform=transforms.ToTensor())
+        dset = torchvision.datasets.VOCDetection(root='./VOC', image_set='val', download=True, transform=transforms.ToTensor())
         
     # defining dataloader
     sub_set = Subset(dset, range(0,2000))

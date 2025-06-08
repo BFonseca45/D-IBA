@@ -5,6 +5,6 @@ param:
 
 db:
   dataset: 'VOC'
-  model: 'YOLO'
+  model: 'Retina'
 
 run_metrics: True
