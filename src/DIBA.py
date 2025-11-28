@@ -94,14 +94,16 @@ def train_bottleneck(model, metric_model, img, gamma, sigma, beta, scale_shape, 
         truth_box.retain_graph = True
 
         target_class_index = labels_c[j]
-        truth_class = nn.functional.one_hot(target_class_index-1, 90).view((1,-1)).double().to(device) # YOLO was trained with only 80 classes
-        # truth_class = nn.functional.one_hot(target_class_index, 80).view((1,-1)).double().to(device)
-
-        # performing the bottleneck, this part here might not be needed for yolo 
-        for p in model.parameters():
-            p.requires_grad = False
-        opt_params = list(model.parameters())
-        opt_params[0].requires_grad = True
+        if model.name == 'YOLO':
+            truth_class = nn.functional.one_hot(target_class_index, 80).view((1,-1)).double().to(device)
+            opt_params = list(model.parameters())
+        else:
+            truth_class = nn.functional.one_hot(target_class_index-1, 90).view((1,-1)).double().to(device) # YOLO was trained with only 80 classes
+            # performing the bottleneck, this part here might not be needed for yolo 
+            for p in model.parameters():
+                p.requires_grad = False
+            opt_params = list(model.parameters())
+            opt_params[0].requires_grad = True
 
         optm = torch.optim.Adam(opt_params, lr = 0.5)
         optm.zero_grad()
@@ -159,7 +161,10 @@ def train_bottleneck(model, metric_model, img, gamma, sigma, beta, scale_shape, 
             _, _ = metric.get_tiles(saliency=heatmap, STEP=8)
 
             _, g = metric.gauss_deg(saliency=heatmap, scale_shape=scale_shape)
-            pointing, _ = metric.pointing_game(box_coord=truth_box, saliency=heatmap)
+            if model.name == 'YOLO':
+                pointing, _ = metric.pointing_game(box_coord=truth_box, saliency=heatmap)
+            else:
+                pointing, _ = metric.pointing_game(box_coord=truth_box*224/800, saliency=heatmap) # FasterRCNN and RetinaNET needs re-scaling to the shape of the saliency
 
             _, area_MoRF = metric.compute_score(metric='MoRF')
             _, area_LeRF = metric.compute_score(metric='LeRF')
@@ -173,16 +178,16 @@ def train_bottleneck(model, metric_model, img, gamma, sigma, beta, scale_shape, 
             model.reset_model()
 
         else:
-
             imgp = img*255
             imgp = torch.squeeze(imgp)
 
             truth_box = rescale_boxes(bbox=truth_box, im_h=224, im_w=224, new_shape=scale_shape)
             truth_box = truth_box[None,...]
-            result = draw_bounding_boxes(imgp.to(torch.uint8), boxes=truth_box, colors='yellow', width=3)
+            result = draw_bounding_boxes(imgp.to(torch.uint8), boxes=truth_box, colors='yellow', width=5)
             show(result)
 
-            plt.imshow(heatmap, cmap='turbo', alpha=0.5)
+            plt.imshow(heatmap, cmap='jet', alpha=0.4)
+            # plt.title('Layer nº: ' + str(model.block_id), fontsize=20)
             plt.show()
 
             count += 1

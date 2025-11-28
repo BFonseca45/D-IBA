@@ -7,8 +7,8 @@ from torch.utils.data import DataLoader, Subset
 from torchvision import transforms
 from tqdm import tqdm
 
-from DIBA import *
-from models import *
+from src.DIBA import *
+from src.models import *
 
 random.seed(10)
 torch.manual_seed(10)
@@ -21,7 +21,6 @@ else:
 device = torch.device(dev)
 
 core = YOLO_DIBA(conf_t=0)
-# core.eval()    
 core = core.to(device)
 
 transform = transforms.Compose([transforms.Resize((224,224)),

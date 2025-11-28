@@ -7,7 +7,7 @@ from torchvision.models.detection import (fasterrcnn_resnet50_fpn,
                                           retinanet_resnet50_fpn)
 from ultralytics import YOLO
 
-from DIBA import BottleneckLayer
+from src.DIBA import BottleneckLayer
 from utils.metrics import *
 from utils.utils import *
 
@@ -186,14 +186,14 @@ class YOLO_DIBA(nn.Module):
         self.mu_r = mu_r
         self.std_r = std_r
         self.conf_t = conf_t        
-        self.block_id = 8
+        self.block_id = 8 # layer to place the bottleneck
         self.backbone = YOLO('yolo11n.pt')
         self.act = None
 
         target_block = self.backbone.model.model[self.block_id]
 
         bn_layer = BottleneckLayer(shape=(1,256,20,20), mu_r=self.mu_r, std_r=self.std_r, activation=None)
-        # bn_layer = BottleneckLayer(shape=(1,64,80,80), mu_r=self.mu_r, std_r=self.std_r, activation=None)
+        # bn_layer = BottleneckLayer(shape=(1,32,160,160), mu_r=self.mu_r, std_r=self.std_r, activation=None)
         bn_layer.requires_grad_ = True
 
         block_bn = torch.nn.Sequential(bn_layer, target_block)

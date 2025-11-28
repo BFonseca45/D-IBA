@@ -145,7 +145,7 @@ class EvalMetric():
         return img_in, ratio.detach().cpu().numpy()
 
     def pointing_game(self, box_coord, saliency):        
-        saliency_new = np.squeeze(saliency)
+        saliency_new = np.squeeze(saliency)        
 
         ind = np.unravel_index(np.argmax(saliency_new), saliency_new.shape)
         if (ind[1] > box_coord[0] and ind[1] < box_coord[2]) and (ind[0] > box_coord[1] and ind[0] < box_coord[3]):

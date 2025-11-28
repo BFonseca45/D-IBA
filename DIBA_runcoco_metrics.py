@@ -11,8 +11,8 @@ from torchvision import transforms
 from tqdm import tqdm
 from omegaconf import DictConfig, OmegaConf
 
-from models import *
-from DIBA import *
+from src.models import *
+from src.DIBA import *
 
 from utils.metrics import *
 from utils.utils import *
@@ -29,6 +29,7 @@ def run_main(cfg:DictConfig) -> None:
         dev = "cpu"
 
     device = torch.device(dev)
+    print(device)
     scale_shape = 224
     
     k = 3*scale_shape*scale_shape
@@ -52,7 +53,7 @@ def run_main(cfg:DictConfig) -> None:
         dset = torchvision.datasets.VOCDetection(root='./VOC', image_set='val', download=True, transform=transforms.ToTensor())
         
     # defining dataloader
-    sub_set = Subset(dset, range(0,2000))
+    sub_set = Subset(dset, range(0,1500))
     set_loader = DataLoader(sub_set, batch_size=1, shuffle=False, num_workers=0)
 
     # initialize faster model 
